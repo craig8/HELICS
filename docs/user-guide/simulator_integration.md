@@ -24,7 +24,7 @@ At some point, maybe from the very beginning of your time with HELICS co-simulat
 3. **What is the simulator's concept of time?** - Understanding how the simulator natively moves through time is essential when determining how time requests will need to be made. Does the simulator have a fixed time-step? Is it user-definable? Does the simulator have any concept of time or is it event-based?
 4. **What is the nature of the data it will send to and receive from the rest of the federation?** Often, this answer is in large part provided by the analysis need that is motivating the integration. However, there may be other angles to consider beyond what's immediately apparent. As a stand-alone simulator, what are its inputs and outputs? What are its assumed or provided boundary conditions? Where do interdependencies exist between the simulator and other simulators within the federation? What kinds of data will it be providing to the rest of the federation?
 
-## The Essential API Calls - TODO: Revisit this section header
+## The Essential API Calls
 
 With the answers to those clarifying questions in mind, let's look at how you might go about creating a HELICS federate, which is essentially the agent that enables your simulator to interface with the rest of the co-simulation. For the remainder of this section of the guide, we'll walk through the typical stages of co-simulation, providing examples of how these might be implemented using HELICS API calls. For the purposes of these examples, we will assume the use of a Python binding. If, as the simulator integrator, you have needs beyond what is discussed here you'll have to dig into the [developer documentation on the APIs](../doxygen/index.md) to get the details you need.
 
@@ -125,7 +125,7 @@ h.helicsFederateSetFlagOption(fed, helics_flag_terminate_on_error)
 This will prevent your federate from hanging in the event that another federate fails.
 
 
-### Organizing the Publications, Subscriptions and Endpoints within the Federate Code
+### Collecting the Publication, Subscription and Endpoint Objects
 
 Having configured the publications, subscriptions and endpoints and registered this information with HELICS, the channels for sending and receiving this information have been created within the cosimulation framework. If you registered the publication, subscriptions and endpoints within your code (i.e., using HELICS API calls), you already have access to each respective object as it was returned when made the registration call. However, if you created your federate using a configuration file which contained all of this information, you now need to retrieve these objects from HELICS so that you can invoke them during the execution of your cosimulation. The following calls will allow you to query HELICS for the metadata associated with each publication. Similar calls can be used to get input (or subscription) and endpoint information.
 
