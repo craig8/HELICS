@@ -194,10 +194,10 @@ At this point, your federate has received all of its input information from the 
 Once the new inputs have been collected and all necessary calculations made, the federate can publish whatever information it needs to for the rest of the federation to use. The code sample below shows how these output values can be published out to the federation using HELICS API calls. As in when reading in new values, these output values can published as a variety of data types and HELICS can handle type conversion if one of the receivers of the value asks for it in a type different than published.
 
 ```python
-helicsPublicationPublishInteger(pub, int_value)
-helicsPublicationPublishDouble(pub, float_value)
-helicsPublicationPublishComplex(pub, real_value, imag_value)
-helicsPublicationPublishChar(pub, string_value)
+h.helicsPublicationPublishInteger(pub, int_value)
+h.helicsPublicationPublishDouble(pub, float_value)
+h.helicsPublicationPublishComplex(pub, real_value, imag_value)
+h.helicsPublicationPublishChar(pub, string_value)
 ...
 ```
 For sending a message through an endpoint, that once again looks a little bit different, in this case because - unlike with a publication - a message requires a destination. If a default destination was set when the endpoint was registered (either through the config file or through calling `h.helicsEndpointSetDefaultDestination()`), then an empty string can be passed. Otherwise, the destination must be provided as shown in API call below where dest is the destination and msg is the message to be sent.
@@ -228,8 +228,6 @@ Once the federate has completed its contribution to the co-simulation, it needs 
 
 ```python
 h.helicsFederateFinalize(fed)
-#wait until the broker is finished (-1 is indefinite timeout otherwise it is the number of ms to wait)
-h.helicsBrokerWaitForDisconnect(broker, -1);
 h.helicsFederateFree(fed)
 h.helicsCloseLibrary()
 ```
@@ -238,4 +236,131 @@ h.helicsCloseLibrary()
 
 ### Complete Example
 
-TODO: Add complete example code taken all together
+In summary, your federate code - taken in its completion - will run through several stages for configuring and executing your federate. After importing the helics library, you will create the federate (either from a config file or directly using HELICS API calls), collect and organize information related to your publications, subscriptions and endpoints, and then enter the HELICS executing mode. At this point, cosimulation execution will start and your federate will begin stepping through time along with all of the other federates participating in the cosimulation. At each time step, your federate may take in information from the rest of the comsimulation through its subscriptions and/or endpoints, make internal updates and calculations and then output information back to the rest of the cosimulation through its publications and endpoints. After each time step is completed, your federate will then request the next time step from HELICS, which allows HELICS to manage synchronization across participating federates. 
+
+The code sample below provides a notional example of this complete workflow using the component pieces provided so far in this simulator integration guide. Note that in this example, we assume a combination federate which has subscriptions, publications and endpoints, that the federate is created from a configuration JSON file, and that the uninterruptible flag is not set. For the sake of simplicity, we will also assume that all subscription and publication data are floats.
+
+```python
+# Import the python HELICS library
+import helics as h
+
+# Define the cosimulation end time
+end_time = 5
+
+# Define the native time step for your simulator. This is the resolution for which 
+# the federate will step through time unless something occurs between time steps.
+time_step = 1
+
+# Create the combination federate from a JSON configuration file ("fed_config.json")
+fed = h.helicsCreateCombinationFederateFromConfig('fed_config.json')
+
+# Collect the objects for the federate's subscriptions, publications and endpoints which 
+# were registered in HELICS when the federate was created from the config file.
+
+# Get the total number of subscriptions from HELICS
+sub_count = h.helicsFederateGetInputCount(fed)
+# Create a list of the subscription objects to be used when querying these subscriptions
+subs = []
+for index in range(0, sub_count):
+	subs += [h.helicsFederateGetInputByIndex(fed, index)]
+
+# Get the total number of publications from HELICS
+pub_count = h.helicsFederateGetPublicationCount(fed)
+# Create a list of the publication objects to be used when publishing data
+pubs = []
+for index in range(0, pub_count):
+	pubs += [h.helicsFederateGetPublicationByIndex(fed, index)]
+
+# Get the total number of endpoints from HELICS
+end_count = h.helicsFederateGetEndpointCount(fed)
+# ends = []
+# Create a list of the endpoint objects to be used when sending and receiving messages
+for index in range(0, end_count):
+	ends += [h.helicsFederateGetEndpointByIndex(fed, index)]
+	
+# Enter executing mode
+h.helicsFederateEnterExecutingMode(fed)
+
+# Start the cosimulate time loop
+t = 0
+time_requested = 0
+while t < end_time:
+
+	# Ingest any data provided by other federates in the cosimulation
+	# Start by checking all subscriptions
+	for sub in subs:
+		# Check to see whether the subscription has been updated.
+		if h.helicsInputIsUpdated(sub):
+			float_value = h.helicsInputGetDouble(sub)
+			# In your actual code, at this point, you would probably do something with 
+			# this information. Note that you can also retrieve the subscription's key
+			# and info by using the following calls. This might be done here or earlier 
+			# when the sub object list was created. 
+			key = h.helicsSubscriptionGetKey(sub)
+			info = h.helicsInputGetInfo(sub)
+		
+		# Now check all endpoints (assuming that you expect your federate to receive 
+		# messages at its endpoints)
+		for end in ends:
+			# As in the subscription example above, it's possible to get the meta data 
+			# associated with the endpoint. That could be done here or when the endpoint
+			# objects are collected during configuration earlier in the code.
+			name = h.helicsEndpointGetName(end)
+			info = h.helicsEndpointGetInfo(end)
+			# Get the message payload for each message pending at each endpoint
+			while h.helicsEndpointPendingMessages(end) > 0:
+				# Get the next message object in the queue
+				msg_obj = h.helicsEndpointGetMessageObject(end)
+				# Get the message payload as a string
+				msg_data = h.helicsMessageGetString(msg_obj)
+				# Presumably, at this point in the code, you would do something with 
+				# the message payload. You can also query the message object to get some 
+				# additional information about it. Probably most useful is the message 
+				# source:
+				msg_source = h.helicsMessageGetOriginalSource(msg_obj)
+				
+		# At this point in execution, you have collected all of the information available 
+		# from the rest of the cosimulation for this time step. Now would be the time to 
+		# make any internal updates to your model and run any calculations or simulations.
+		
+		# Once any internal updates and calculations are complete, it is time to publish 
+		# any data or send any messages necessary back to the rest of the federates in the
+		# cosimulation. In your actual code, you would send meaningful information back to 
+		# HELICS. Here, we will publish the number 1.23 as our values and the string "string"
+		# as our messages.
+		# Start by iterating through through each publication
+        for pub in pubs:
+            h.helicsPublicationPublishDouble(1.23)
+			# As in previous cases, metadata about the publication can be retrieved. 
+            key = h.helicsPublicationGetKey(pub)
+			info = h.helicsPublicationGetInfo(pub)
+			
+		# Now loop through all endpoints. For this example, we'll assume that a default destination 
+		# was provided in the config file. 
+        for end in ends:
+			h.helicsEndpointSendMessageRaw(eid, '', "string")
+			# And once again, you can pull some metadata about the endpoint.
+            name = h.helicsEndpointGetName(eid)
+            info = h.helicsEndpointGetInfo(eid)
+            dest = h.helicsEndpointGetDefaultDestination(end)
+		
+		# Now it's time to request the next time step. Notice that in this example, because the 
+		# federate is interruptible, we check to see whether the current time (t) is equal to 
+		# the last requested time. If it is, that means that during the last time step we received
+		# the requested time and can increment by the time step. If not, that means that the federate
+		# was interrupted and was granted a time before the requested time, and we will request that 
+		# time again. 
+		if t == time_requested:
+			time_requested = t + time_step
+		t = h.helicsFederateRequestTime(fed, time_requested)
+		
+# After the cosimulation loop ends, it's time to finalize the federate.
+h.helicsFederateFinalize(fed)
+h.helicsFederateFree(fed)
+h.helicsCloseLibrary()
+            
+		
+				
+		
+				
+```
