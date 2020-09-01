@@ -40,7 +40,7 @@ Each federate has a core set of configuration information and metadata associate
 
 ### Publications, Subscriptions and Endpoints
 
-One of the first design choices you have to make is the type of federate that you will create to instantiate your simulator within the co-simulation. At this point, we will revisit the question on what kind of data you expect your the simulator to exchange with the rest of the federation. There are three kinds of federates within HELICS: [TODO: Figure out why these links aren't working] [value federates](./value_federates.md), [message federates](./message_federates.md), and combination federates. 
+One of the first design choices you have to make is the type of federate that you will create to instantiate your simulator within the co-simulation. At this point, we will revisit the question on what kind of data you expect your the simulator to exchange with the rest of the federation. There are three kinds of federates within HELICS: [value federates](./value_federates.md), [message federates](./message_federates.md), and combination federates. 
 
 Value federates are used to exchange values through HELICS using a publication/subscription architecture, where only a single value can be received at a given subscription at each time step. Value federates are used to represent physics-based interdependencies. An example of where the exchange of values is probably most appropriate is where the same data point is represented in two different simulators, such as the voltage at a transmission bus that corresponds to the voltage at a distribution feeder head. 
 
