@@ -84,7 +84,6 @@ fi = h.helicsCreateFederateInfo()
 
 Once the federate info object exists, HELICS API calls can be used to set the [configuration parameters](./../configuration/FederateFlags.md) as appropriate. For example, to set the the only_transmit_on_change flag to true, you would use the following API call:
 
-TODO: Update the below with the flag string one pyHELICS library is live.
 ```python
 h.helicsFederateInfoSetFlagOption(fi, 6, True)
 ```
