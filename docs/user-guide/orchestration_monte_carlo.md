@@ -30,7 +30,9 @@ The uniform distribution is among the most simple of probability distributions. 
 
 ## Monte Carlo Cosim Example: EV Garage Charging
 
-The example cosimulation to demonstrate Monte Carlo distribution sampling is that of an electric vehicle (EV) charging hub. Imagine a parking garage that only serves EVs, has a static number of charging ports, and always has an EV connected to a charging port. An electrical engineer planning to upgrade the distribution transformer prior to building the garage may ask the question, "What is the likely power draw that EVs will demand?"
+The example cosimulation to demonstrate Monte Carlo distribution sampling is that of an electric vehicle (EV) charging hub. Imagine a parking garage that only serves EVs, has a static number of charging ports, and always has an EV connected to a charging port. An electrical engineer planning to upgrade the distribution transformer prior to building the garage may ask the question: What is the likely power draw that EVs will demand?
+
+### Probability Distributions
 
 *Likely* is synonymous for *probability*. As we are interested in a probability, we cannot rely on a deterministic framework for modeling the power draw from EVs. I.e., we cannot assume that we know a priori the exact demand for Level 1, Level 2, and Level 3 chargers in the garage. A deterministic assumption would be equivalent to stating, e.g., that 30% of customers will need Level 1 charge ports, 50% will need Level 2, and 20% will need Level 3. What if, instead of static proportions, we assign a distribution to the need for each level of charge port. The number of each level port is discrete (there can't be 0.23 charge ports), and we want the number to be positive (no negative charge ports), so we will use the [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution). The Poisson distribution is a function of the anticipated average of the value $\lambda$ and the number of samples $k$. Then we can write the distribution for the number of chargers in each level, $L$, as
 
@@ -65,6 +67,47 @@ Let's extend our original assumption that the distribution of chargers is static
 </center>
 
   ![](../img/EVfulldist.png)
+  
+Notice that the individual overplotted distributions in the two histograms above are different -- there is more flexibility encoded into the second. The distributions in the second plot describe the following assumptions about the anticipated need for Level 1, 2, and 3 chargers:
+
+1. The number of charging ports is discrete and positive (Poisson).
+2. The variance in the number of ports should be normally distributed.
+3. The average percentage of Level 1, 2, and 3 chargers is 30%, 50%, and 20%, respectively.
+4. The variance around the average is uniformly distributed.
+5. The variance is relatively very broad for Level 1, broad for Level 2, and very constrained for Level 3. This means we are very confident in our guess of the average percentage for Level 3 chargers, less confident for Level 2, and much less confident for Level 3.
+
+We have described the individual distributions for each level of charging port. What we don't know, prior to running the Monte Carlo simulation, is how these distributions will jointly impact the research question.
+
+### Research Question Configuration
+
+We want to address the research question: What is the likely power draw that EVs will demand? 
+
+In [**Example 3**](https://github.com/GMLC-TDC/HELICS/tree/v3userguide/examples/user_guide_examples/Example_3), there are two python [**federates**](federates.md) -- one to simulate any number of EVs, and another to simulate the parking garage charge controller, which will dictate whether an EV can continue to charge. At the beginning of the cosimulation, the distributions defined above will be sampled $N$ times within the EV federate, where $N =$ the number of parking spots/charging ports in the garage ($N = 100$ in Example 3). The output of the initial sampling is the number of requested Level 1, 2, and 3 charging ports. The states of charge (SOC) for the batteries on board are initialized to a uniform random number between 0.05 and 0.5, and these SOC are sent to the EV Controller federate. If the SOC of an EV battery is less than 0.9, the EV Controller federate tells the EV battery in the EV federate to continue charging. Otherwise, the EV Controller discharges the EV battery, and instructs the EV federate to sample a new EV battery from the distributions (one sample).
+
+After the two federates pass information between each other -- EV federate sends SOC, EV Controller federate instructs whether to keep charging or resample the distributions -- the EV federate calculates the total power demanded in the last time interval.
+
+### Cosimulation Reproduction
+
+As best practice, we recommend setting a seed for a single cosimulation. Management of multiple iterations of the cosimulation can be done by setting the seed as a function of the number of brokers, where there will be one broker for each iteration. In Python 3.X:
+
+```
+import argparse
+
+parser = argparse.ArgumentParser(description='EV simulator')
+parser.add_argument('--seed', type=int, default=0,
+                help='The seed that will be used for our random distribution')
+parser.add_argument('--port', type=int, default=-1,
+                help='port of the HELICS broker')
+
+
+args = parser.parse_args()
+np.random.seed(args.seed)
+```
+
+The cosimulation in [**Example 3**](https://github.com/GMLC-TDC/HELICS/tree/v3userguide/examples/user_guide_examples/Example_3) was done with 10 iterations and seeds ranging from 0 to 9. The output for the Monte Carlo cosimulations with these seeds can be found with the source code. 
+
+The result of running the cosimulation 10 times tells us that we can anticipate needed 
+
  
 # Merlin spec for Cosimulation
 In this specification we will be using the
