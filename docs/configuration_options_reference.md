@@ -854,20 +854,19 @@ HELICS is able to do some levels of unit conversion, currently only on double ty
 
 (publications only) `global` is used to indicate that the value in `key` will be used as a global name when other federates are subscribing to the message. This requires that the user ensure that the name is used only once across all federates. Setting `global` to `true` is handy for federations with a small number of federates and a small number of message exchanges as it allows the `key` string to be short and simple. For larger federations, it is likely to be easier to set the flag to `false` and accept the extra naming.
 
----
-	
 
+---
 
 ### `buffer_data` | `bufferdata` | `bufferData` [false]
 _API:_ `helicsInputSetOption` 
-[C++](https://docs.helics.org/en/latest/doxygen/classhelics_1_1CoreFederateInfo.html#a63efa7762fdc8a9d9869bbed6939448e)
+[C++](https://docs.helics.org/en/latest/doxygen/cireclasshelics_1_1CoreFederateInfo.html#a63efa7762fdc8a9d9869bbed6939448e)
 | [C](https://docs.helics.org/en/latest/c-api-reference/index.html#input)
 | [Python](https://python.helics.org/api/capi-py/#helicsInputSetOption)
 | [Julia](https://julia.helics.org/latest/api/#HELICS.helicsInputSetOption-Tuple{HELICS.Subscription,Union{Int64,%20HELICS.Lib.helics_handle_options},Bool})
 
 _Property's enumerated name:_ `helics_handle_option_buffer_data` [411]
 
-(only valid for inputs and subscriptions) Setting this flag will buffer the last value sent during the initialization phase of HELICS co-simulations. When the execution phase begins, that value will be resent to the receiving handle.
+Setting this flag makes data available to new federates (once dynamic federations are supported).
 
 ---
 	
