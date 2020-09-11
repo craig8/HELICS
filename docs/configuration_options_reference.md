@@ -874,7 +874,7 @@ Setting this flag makes data available to new federates (once dynamic federation
 
 ### `alias` [null]
 _API:_
-xxxxxxx - Is this a user-facing option? The API is a part of the application API but doesn't start "helics..." making me wonder.
+TODO - Is this a user-facing option? The API is a part of the application API but doesn't start "helics..." making me wonder.
 
 ---
 	
@@ -1043,7 +1043,7 @@ The name of the endpoint as it will be known to the rest of the federation.
 ### `type` []
 _API:_ (none)
 
-xxxxxxx
+TODO - What does type mean for an endpoint? I assume its optional
 
 ---
 	
