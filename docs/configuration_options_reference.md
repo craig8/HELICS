@@ -247,13 +247,13 @@ _API:_ `helicsFederateInfoSetCoreInitString`
 
 A command-line-like string that specifies options for the core as it connects to the federation. These options are:
 
-- `--broker=` | `broker_address=` | `brokeraddress`: IP address of broker
+- `--broker_address=` | `brokeraddress`: IP address of broker
 - `--brokerport=`: Port number on which the broker is communicating
 - `--broker_rank=`: For MPI cores only; identifies the MPI rank of the broker
 - `--broker_tag=`: For MPI cores only; identifies the MPI tag of the broker
 - `--localport=`: Port number to use when communicating with this core
 - `--autobroker`: When included the core will automatically generate a broker
-- `--key=`: Specifies a key to use when communicating with the broker. Only federates with this key specified will be able to talk to the broker with the same `key` value. This is used to prevent federations running on the same hardware from accidentally interfering with each other.
+- `--broker_key=`: Specifies a key to use when communicating with the broker. Only federates with this key specified will be able to talk to the broker with the same `key` value. This is used to prevent federations running on the same hardware from accidentally interfering with each other.
 
 In addition to these options, all options shown in the `broker_init_string` are also valid.
 
@@ -261,7 +261,7 @@ In addition to these options, all options shown in the `broker_init_string` are 
 	
 	
 
-### `autobroker` [false]
+### `autobroker` | `auto_broker` | `autoBroker` [false]
 _API:_ (none)
 
 Automatically generate a broker if one cannot be connected to. For federations with only one broker (often the case) and/or with federations containing custom federates that were developed for this particular application, it can be convenient to create the broker in the process of creating a specific federate; this option allows that to take place. The downside to this is it creates a federation with a small amount of mystery as the broker is not clearly shown to be launched as its own federate alongside the other federates and those unfamiliar with the federation composition may have to spend some extra time to understand where the broker is coming from.
