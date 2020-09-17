@@ -2,10 +2,10 @@
 
 ```eval_rst
 .. toctree::
-    :hidden:
     :maxdepth: 2
     
-    
+    index#orientation
+    installation
 
 ```
 
@@ -25,7 +25,7 @@ There are a number of classes of HELICS users:
 - **Developers** of HELICS who are improving HELICS functionality and contributing to the code base
 	- See the [**Developer Guide**](../developer-guide.md)
 
-## Installation
+## [Installation](./installation/index.md)
 
 
 
