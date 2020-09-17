@@ -28,7 +28,18 @@ There are a number of classes of HELICS users:
 
 
 ## Fundamental Topics
+```eval_rst
+.. toctree::
+    :hidden:
+    :maxdepth: 1
 
+    co-simulation_overview
+    helics_key_concepts
+    helics_co-sim_sequence
+
+
+
+```
 
 
 - [**Co-Simulation Overview**](./co-simulation_overview.md) - A more detailed discussion of what co-simulation is and how it is used
