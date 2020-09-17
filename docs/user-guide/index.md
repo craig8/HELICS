@@ -33,7 +33,7 @@ There are a number of classes of HELICS users:
 ```eval_rst
 .. toctree::
     :hidden:
-    :maxdepth: 1
+    :maxdepth: 2
 
     co-simulation_overview
     helics_key_concepts
