@@ -6,7 +6,7 @@ Co-simulation is a powerful analysis technique that allows simulators of differe
 
 ```eval_rst
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     
     orientation
     installation/index
