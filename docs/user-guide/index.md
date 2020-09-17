@@ -4,12 +4,14 @@
 .. toctree::
     :hidden:
     :maxdepth: 2
+    
+    
 
 ```
 
 Co-simulation is a powerful analysis technique that allows simulators of different domains to interact through the course of the simulation, typically by dynamically exchanging values that define boundary conditions for other simulators. HELICS is a co-simulation platform that has been designed to allow integration of these simulators across a variety of computation platforms and languages. HELICS has been designed with power system simulation in mind ([GridLAB-D](https://github.com/gridlab-d/gridlab-d), [GridDyn](https://github.com/LLNL/GridDyn), [MATPOWER](https://github.com/GMLC-TDC/MATPOWER-wrapper), [OpenDSS](https://sourceforge.net/projects/electricdss/), [PSLF](https://github.com/GMLC-TDC/PSLF-wrapper), [InterPSS](https://github.com/InterPSS-Project/ipss-common), [FESTIV](https://www.nrel.gov/grid/festiv-model.html)) but is general enough to support a wide variety of simulators and co-simulation tasks. Support for other domains is anticipated to increase over time.
 
-## Who Is This User Guide For?
+## Orientation
 
 There are a number of classes of HELICS users:
 
@@ -36,8 +38,7 @@ There are a number of classes of HELICS users:
     co-simulation_overview
     helics_key_concepts
     helics_co-sim_sequence
-
-
+	
 
 ```
 
@@ -60,7 +61,6 @@ There are a number of classes of HELICS users:
 	- [**(Termination) Logging**](./logging.md) - Discussion of logging within HELICS and how to control it.
 
 
-- **Trouble-Shooting HELICS Co-Simulations (forthcoming)** - What to do when the co-simulations don't seem to be working correctly.
 
 
 ## Advanced Topics
@@ -97,3 +97,8 @@ There are a number of classes of HELICS users:
 [Configuration Options Reference](../configuration_options_reference.md) - Comprehensive reference to all the HELICS configuration options.
 
 ## Examples
+
+## Trouble Shooting
+
+[**Trouble Shooting Support**](./support.md) 
+What to do when the co-simulations don't seem to be working correctly.
