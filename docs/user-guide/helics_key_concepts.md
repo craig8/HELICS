@@ -14,7 +14,7 @@ Before digging into the specifics of how a HELICS co-simulation runs, there are 
 
 - **Broker** - The broker is a special executable distributed with HELICS; it is responsible for performing the two key tasks of a co-simulation (maintaining synchronization in the federation and facilitating message exchange, see [the section on timing](./timing.md). Each core (which generally is synonymous with "federate") must connect to a broker to be part of the federation. Brokers receive and distribute messages from any federates that are connected to it, routing them to the appropriate location. HELICS also supports a hierarchy of brokers, allowing brokers to pass messages between each other to connect federates associated with different brokers and thus maintain the integrity of the federation. The broker at the top of the hierarchy is called the "root broker" and it is the message router of last resort.
 
-## Potential HELICS Co-simulation Architectures
+## HELICS Co-simulation Architectures
 
 Given the definitions of the entities above, there are several co-simulation architectures that can be constructed where the relationships between this entities can vary.
 

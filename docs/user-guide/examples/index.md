@@ -10,3 +10,6 @@
 
 
 ```
+<!--- 
+this page should mirror the user guide, if possible
+-->
