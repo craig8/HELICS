@@ -12,14 +12,6 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <string>
 
 namespace helics {
-/** define the type of the handle*/
-enum class handle_type : char {
-    unknown = 'u',
-    publication = 'p',  //!< handle to output interface
-    input = 'i',  //!< handle to a input interface
-    endpoint = 'e',  //!< handle to an endpoint
-    filter = 'f',  //!< handle to a filter
-};
 
 /** define extra flag definitions*/
 enum handle_flag_definitions {
@@ -38,8 +30,8 @@ class BasicHandleInfo {
     /** default constructor*/
     BasicHandleInfo() noexcept: type_in(type), type_out(units) {}
     /** construct from the data*/
-    BasicHandleInfo(global_federate_id federate_id,
-                    interface_handle handle_id,
+    BasicHandleInfo(GlobalFederateId federate_id,
+                    InterfaceHandle handle_id,
                     handle_type type_of_handle,
                     const std::string& key_name,
                     const std::string& type_name,
@@ -54,8 +46,8 @@ class BasicHandleInfo {
         copy*/
     }
 
-    const global_handle handle{};  //!< the global federate id for the creator of the handle
-    local_federate_id local_fed_id{};  //!< the local federate id of the handle
+    const GlobalHandle handle{};  //!< the global federate id for the creator of the handle
+    LocalFederateId local_fed_id{};  //!< the local federate id of the handle
     const handle_type handleType{handle_type::unknown};  //!< the type of the handle
     bool used{false};  //!< indicator that the handle is being used to link with another federate
     uint16_t flags{
@@ -68,9 +60,9 @@ class BasicHandleInfo {
     const std::string& type_in;  //!< the input type of a filter
     const std::string& type_out;  //!< the output type of a filter
     /** get the interface handle information */
-    interface_handle getInterfaceHandle() const { return handle.handle; }
+    InterfaceHandle getInterfaceHandle() const { return handle.handle; }
     /** extract a global federate id */
-    global_federate_id getFederateId() const { return handle.fed_id; }
+    GlobalFederateId getFederateId() const { return handle.fed_id; }
     /** set the user level information field*/
     void setInfoField(std::string& info) { interface_info = info; }
 };

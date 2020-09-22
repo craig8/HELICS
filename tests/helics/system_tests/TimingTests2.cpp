@@ -128,7 +128,7 @@ TEST_F(timing_tests2, small_period_test)
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             //   std::cout << "sender1: sending message at time " << static_cast<double> (ctime) <<
             //   std::endl;
-            s1.send("fed0/data", "3.14");
+            s1.sendTo("fed0/data", "3.14");
         }
         send1->finalize();
     };
@@ -142,7 +142,7 @@ TEST_F(timing_tests2, small_period_test)
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
             // std::cout << "sender2: sending message at time " << static_cast<double> (ctime) <<
             // std::endl;
-            s2.send("fed0/data", "3.14");
+            s2.sendTo("fed0/data", "3.14");
         }
         send2->finalize();
     };

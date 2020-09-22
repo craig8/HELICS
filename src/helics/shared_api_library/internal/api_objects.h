@@ -16,6 +16,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <memory>
 #include <mutex>
 #include <string>
+#include <utility>
 #include <vector>
 
 /** this is a random identifier put in place when the federate or core or broker gets created*/
@@ -90,6 +91,7 @@ class FedObject {
     std::vector<std::unique_ptr<PublicationObject>> pubs;
     std::vector<std::unique_ptr<EndpointObject>> epts;
     std::vector<std::unique_ptr<FilterObject>> filters;
+    std::pair<std::string, std::string> commandBuffer;
     FedObject() = default;
     ~FedObject();
 };
@@ -167,6 +169,8 @@ inline void assignError(helics_error* err, int errorCode, const char* string)
 extern const std::string emptyStr;
 extern const std::string nullStringArgument;
 #define AS_STRING(str) ((str) != nullptr) ? std::string(str) : emptyStr
+
+#define AS_STRING_VIEW(str) ((str) != nullptr) ? std::string_view(str) : std::string_view(emptyStr)
 
 #define CHECK_NULL_STRING(str, retval)                                                                                                     \
     do {                                                                                                                                   \

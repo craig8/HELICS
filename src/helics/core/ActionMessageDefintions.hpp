@@ -34,10 +34,14 @@ across different compilers*/
         cmd_query = -cmd_info_basis - 37,  //!< send a query this is a priority command
         cmd_set_global = -cmd_info_basis - 55,  //!< set a global value
         cmd_broker_query = -37,  //!< send a query to a core
+        cmd_interface_query = -39,  //!< send a query to a core
         cmd_query_reply = -cmd_info_basis - 38,  //!< response to a query
         cmd_reg_broker =
             -cmd_info_basis - 40,  //!< for a broker to connect with a higher level broker
         cmd_broker_location = cmd_info_basis - 57,  //!< command to define a new broker location
+
+        cmd_send_command = -95,  //!< command to send a command to a command interface
+        cmd_command_response = -98,  //!< command containing a response to a command
         cmd_broker_setup = -1,  //!< command to load the setup information for a broker
         cmd_ignore = 0,  //!< null command
         cmd_tick = 1,  //!< command for a timer tick
@@ -104,6 +108,7 @@ across different compilers*/
         cmd_data_link =
             cmd_info_basis + 707,  //!< command to connect a publication with an endpoint
         cmd_filter_link = cmd_info_basis + 709,  //!< command to add a target to a filter
+        cmd_endpoint_link = cmd_info_basis + 711,  //!< command to link endpoints
 
         cmd_fed_configure_time =
             202,  //!< command to update the configuration of a federate a time parameter
@@ -272,6 +277,7 @@ across different compilers*/
 
 #define CMD_DATA_LINK action_message_def::action_t::cmd_data_link
 #define CMD_FILTER_LINK action_message_def::action_t::cmd_filter_link
+#define CMD_ENDPOINT_LINK action_message_def::action_t::cmd_endpoint_link
 
 #define CMD_REMOVE_NAMED_TARGET action_message_def::action_t::cmd_remove_named_target
 #define CMD_REMOVE_TARGET action_message_def::action_t::cmd_remove_target
@@ -310,8 +316,12 @@ across different compilers*/
 
 #define CMD_QUERY action_message_def::action_t::cmd_query
 #define CMD_BROKER_QUERY action_message_def::action_t::cmd_broker_query
+#define CMD_INTERFACE_QUERY action_message_def::action_t::cmd_interface_query
 #define CMD_QUERY_REPLY action_message_def::action_t::cmd_query_reply
 #define CMD_SET_GLOBAL action_message_def::action_t::cmd_set_global
+
+#define CMD_SEND_COMMAND action_message_def::action_t::cmd_send_command
+#define CMD_COMMAND_STATUS action_message_def::action_t::cmd_command_status
 
 #define CMD_MULTI_MESSAGE action_message_def::action_t::cmd_multi_message
 

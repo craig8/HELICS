@@ -15,14 +15,14 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <utility>
 
 namespace helics {
-const std::vector<std::shared_ptr<const data_block>>& InputInfo::getAllData() const
+const std::vector<std::shared_ptr<const SmallBuffer>>& InputInfo::getAllData() const
 {
     return current_data;
 }
 
-static const std::shared_ptr<const data_block> NullData{nullptr};
+static const std::shared_ptr<const SmallBuffer> NullData{nullptr};
 
-const std::shared_ptr<const data_block>& InputInfo::getData(int index) const
+const std::shared_ptr<const SmallBuffer>& InputInfo::getData(int index) const
 {
     if (isValidIndex(index, current_data)) {
         return current_data[index];
@@ -44,7 +44,7 @@ static bool priorityCheck(int32_t index1, int32_t index2, const std::vector<int3
     return false;
 }
 
-const std::shared_ptr<const data_block>& InputInfo::getData(uint32_t* inputIndex) const
+const std::shared_ptr<const SmallBuffer>& InputInfo::getData(uint32_t* inputIndex) const
 {
     int ind{0};
     int mxind{-1};
@@ -79,10 +79,10 @@ static auto recordComparison = [](const InputInfo::dataRecord& rec1,
         ((rec1.time == rec2.time) ? (rec1.iteration < rec2.iteration) : false);
 };
 
-void InputInfo::addData(global_handle source_id,
+void InputInfo::addData(GlobalHandle source_id,
                         Time valueTime,
                         unsigned int iteration,
-                        std::shared_ptr<const data_block> data)
+                        std::shared_ptr<const SmallBuffer> data)
 {
     int index;
     bool found = false;
@@ -110,7 +110,7 @@ void InputInfo::addData(global_handle source_id,
     }
 }
 
-void InputInfo::addSource(global_handle newSource,
+void InputInfo::addSource(GlobalHandle newSource,
                           const std::string& sourceName,
                           const std::string& stype,
                           const std::string& sunits)
@@ -126,7 +126,7 @@ void InputInfo::addSource(global_handle newSource,
     has_target = true;
 }
 
-void InputInfo::removeSource(global_handle sourceToRemove, Time minTime)
+void InputInfo::removeSource(GlobalHandle sourceToRemove, Time minTime)
 {
     inputUnits.clear();
     inputType.clear();
@@ -221,6 +221,25 @@ const std::string& InputInfo::getInjectionUnits() const
         }
     }
     return inputUnits;
+}
+
+const std::string& InputInfo::getTargets() const
+{
+    if (sourceTargets.empty()) {
+        if (!source_info.empty()) {
+            if (source_info.size() == 1) {
+                sourceTargets = source_info.front().key;
+            } else {
+                sourceTargets.push_back('[');
+                for (const auto& src : source_info) {
+                    sourceTargets.append(generateJsonQuotedString(src.key));
+                    sourceTargets.push_back(',');
+                }
+                sourceTargets.back() = ']';
+            }
+        }
+    }
+    return sourceTargets;
 }
 
 bool InputInfo::updateTimeUpTo(Time newTime)
