@@ -208,47 +208,20 @@ template<class X>
 std::enable_if_t<std::is_arithmetic<X>::value>
     valueExtract(const data_view& dv, data_type baseType, X& val)
 {
-    constexpr size_t byte_order_check_size = 1;
     switch (baseType) {
         case data_type::helics_any: {
-            if (dv.size() == sizeof(double) + byte_order_check_size) {
-                auto V = ValueConverter<double>::interpret(dv);
-                if (std::isnormal(V)) {
-                    val = static_cast<X>(V);
-                } else {
-                    auto Vint = ValueConverter<int64_t>::interpret(dv);
-                    val = static_cast<X>(Vint);
-                }
-            } else if (dv.size() == 2 * sizeof(double) + byte_order_check_size) {
-                auto V = ValueConverter<std::complex<double>>::interpret(dv);
-                val = static_cast<X>(std::abs(V));
-            } else if (dv.size() == sizeof(int) + byte_order_check_size) {
-                auto V = ValueConverter<float>::interpret(dv);
-                if (std::isnormal(V)) {
-                    val = static_cast<X>(V);
-                } else {
-                    auto Vint = ValueConverter<int32_t>::interpret(dv);
-                    val = static_cast<X>(Vint);
-                }
-            } else if (dv.size() == sizeof(char)) {
-                val = static_cast<X>((dv[0] == '0') ? 0 : 1);
-            } else {
-                try {
-                    val = static_cast<X>(std::stod(dv.string()));
-                }
-                catch (const std::invalid_argument&) {  // well lets try a vector conversion
-                    auto V = ValueConverter<std::vector<double>>::interpret(dv);
-                    val = static_cast<X>(vectorNorm(V));
-                }
-            }
+            defV val_dv;
+            valueExtract(dv, baseType, val_dv);
+            valueExtract(val_dv, val);
             break;
         }
         case data_type::helics_string:
         default:
-            val = static_cast<X>(getDoubleFromString(dv.string()));
+            val = static_cast<X>(
+                getDoubleFromString(ValueConverter<std::string_view>::interpret(dv)));
             break;
         case data_type::helics_bool:
-            val = static_cast<X>((dv.string() != "0"));
+            val = static_cast<X>((ValueConverter<std::string_view>::interpret(dv) != "0"));
             break;
         case data_type::helics_named_point: {
             auto npval = ValueConverter<NamedPoint>::interpret(dv);

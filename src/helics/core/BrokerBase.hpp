@@ -31,11 +31,11 @@ class helicsCLI11App;
  */
 class BrokerBase {
   protected:
-    std::atomic<global_broker_id> global_id{
+    std::atomic<GlobalBrokerId> global_id{
         parent_broker_id};  //!< the unique identifier for the broker(core or broker)
-    global_broker_id global_broker_id_local{};  //!< meant to be the same as global_id but not
-                                                //!< atomically protected
-    global_broker_id higher_broker_id{0};  //!< the id code of the broker 1 level about this broker
+    GlobalBrokerId global_broker_id_local{};  //!< meant to be the same as global_id but not
+                                              //!< atomically protected
+    GlobalBrokerId higher_broker_id{0};  //!< the id code of the broker 1 level about this broker
     std::atomic<int32_t> maxLogLevel{
         1};  //!< the logging level to use levels >=this will be ignored
     int32_t consoleLogLevel{1};  //!< the logging level for console display
@@ -60,7 +60,7 @@ class BrokerBase {
         fileLogger;  //!< default logging object to use if the logging callback is not specified
     std::thread queueProcessingThread;  //!< thread for running the broker
     /** a logging function for logging or printing messages*/
-    std::function<void(int, const std::string&, const std::string&)> loggerFunction;
+    std::function<void(int, std::string_view, std::string_view)> loggerFunction;
 
     std::atomic<bool> haltOperations{
         false};  //!< flag indicating that no further message should be processed
@@ -142,12 +142,13 @@ class BrokerBase {
     void addActionMessage(ActionMessage&& m);
 
     /** set the logging callback function
-    @param logFunction a function with a signature of void(int level,  const std::string &source,
-    const std::string &message) the function takes a level indicating the logging level string with
+    @param logFunction a function with a signature of void(int level, std::string_view identifier,
+    std::string_view message) the function takes a level indicating the logging level string with
     the source name and a string with the message
     */
     void setLoggerFunction(
-        std::function<void(int, const std::string&, const std::string&)> logFunction);
+        std::function<void(int level, std::string_view identifier, std::string_view message)>
+            logFunction);
     /** flush the loggers*/
     void logFlush();
     /** check if the main processing loop of a broker is running*/
@@ -160,7 +161,7 @@ class BrokerBase {
     */
     void setLogLevels(int32_t consoleLevel, int32_t fileLevel);
     /** get the internal global broker id*/
-    global_broker_id getGlobalId() const { return global_id.load(); }
+    GlobalBrokerId getGlobalId() const { return global_id.load(); }
 
   private:
     /** start main broker loop*/
@@ -193,10 +194,10 @@ class BrokerBase {
     /** send a Message to the logging system
     @return true if the message was actually logged
     */
-    virtual bool sendToLogger(global_federate_id federateID,
+    virtual bool sendToLogger(GlobalFederateId federateID,
                               int logLevel,
-                              const std::string& name,
-                              const std::string& message) const;
+                              std::string_view name,
+                              std::string_view message) const;
 
     /** generate a new random id*/
     void generateNewIdentifier();
@@ -205,7 +206,7 @@ class BrokerBase {
     /** generate a CLI11 Application for subprocesses for processing of command line arguments*/
     virtual std::shared_ptr<helicsCLI11App> generateCLI();
     /** set the broker error state and error string*/
-    void setErrorState(int eCode, const std::string& estring);
+    void setErrorState(int eCode, std::string_view estring);
     /** set the logging file if using the default logger*/
     void setLoggingFile(const std::string& lfile);
 

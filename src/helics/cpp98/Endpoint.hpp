@@ -233,10 +233,9 @@ class Endpoint {
     @param data pointer to data location
     @param data_size the length of the data
     */
-    void sendMessage(const char* data, size_t data_size)
+    void send(const void* data, size_t data_size)
     {
-        helicsEndpointSendMessageRaw(
-            ep, HELICS_NULL_POINTER, data, static_cast<int>(data_size), hThrowOnError());
+        helicsEndpointSend(ep, data, static_cast<int>(data_size), hThrowOnError());
     }
 
     /** send a data block and length
@@ -244,20 +243,18 @@ class Endpoint {
     @param data pointer to data location
     @param data_size the length of the data
     */
-    void sendMessage(const std::string& dest, const char* data, size_t data_size)
+    void sendTo(const std::string& dest, const void* data, size_t data_size)
     {
-        helicsEndpointSendMessageRaw(
-            ep, dest.c_str(), data, static_cast<int>(data_size), hThrowOnError());
+        helicsEndpointSendTo(ep, dest.c_str(), data, static_cast<int>(data_size), hThrowOnError());
     }
     /** send a data block and length
    @param data pointer to data location
    @param data_size the length of the data
    @param time the time to send the message
    */
-    void sendMessage(const char* data, size_t data_size, helics_time time)
+    void sendAt(helics_time time, const char* data, size_t data_size)
     {
-        helicsEndpointSendEventRaw(
-            ep, HELICS_NULL_POINTER, data, static_cast<int>(data_size), time, hThrowOnError());
+        helicsEndpointSendAt(ep, time, data, static_cast<int>(data_size), hThrowOnError());
     }
     /** send a data block and length
     @param dest destination to send the message to
@@ -265,93 +262,86 @@ class Endpoint {
     @param data_size the length of the data
     @param time the time to send the message
     */
-    void sendMessage(const std::string& dest, const char* data, size_t data_size, helics_time time)
+    void sendToAt(const std::string& dest, helics_time time, const void* data, size_t data_size)
     {
-        helicsEndpointSendEventRaw(
-            ep, dest.c_str(), data, static_cast<int>(data_size), time, hThrowOnError());
+        helicsEndpointSendToAt(
+            ep, dest.c_str(), time, data, static_cast<int>(data_size), hThrowOnError());
     }
     /** send a string to the target destination
     @param data the information to send
     */
-    void sendMessage(const std::string& data)
+    void send(const std::string& data)
     {
-        helicsEndpointSendMessageRaw(
-            ep, HELICS_NULL_POINTER, data.c_str(), static_cast<int>(data.size()), hThrowOnError());
+        helicsEndpointSend(ep, &(data[0]), static_cast<int>(data.size()), hThrowOnError());
     }
 
     /** send a string to a particular destination
      @param dest the target endpoint to send the data to
      @param data the information to send
    */
-    void sendMessage(const std::string& dest, const std::string& data)
+    void sendTo(const std::string& dest, const std::string& data)
     {
-        helicsEndpointSendMessageRaw(
-            ep, dest.c_str(), data.c_str(), static_cast<int>(data.size()), hThrowOnError());
+        helicsEndpointSendTo(
+            ep, dest.c_str(), &(data[0]), static_cast<int>(data.size()), hThrowOnError());
     }
     /** send a string at a particular time
      @param data the information to send
      @param time the time the message should be delivered
    */
-    void sendMessage(const std::string& data, helics_time time)
+    void sendAt(helics_time time, const std::string& data)
     {
-        helicsEndpointSendEventRaw(ep,
-                                   HELICS_NULL_POINTER,
-                                   data.c_str(),
-                                   static_cast<int>(data.size()),
-                                   time,
-                                   hThrowOnError());
+        helicsEndpointSendAt(ep,
+                             time,
+                             &(data[0]),
+                             static_cast<int>(data.size()),
+
+                             hThrowOnError());
     }
     /** send a string to a particular destination at a particular time
      @param dest the target endpoint to send the data to
      @param data the information to send
       @param time the time the message should be delivered
    */
-    void sendMessage(const std::string& dest, const std::string& data, helics_time time)
+    void sendToAt(const std::string& dest, helics_time time, const std::string& data)
     {
-        helicsEndpointSendEventRaw(
-            ep, dest.c_str(), data.c_str(), static_cast<int>(data.size()), time, hThrowOnError());
+        helicsEndpointSendToAt(
+            ep, dest.c_str(), time, &(data[0]), static_cast<int>(data.size()), hThrowOnError());
     }
 
     /** send a vector of data to the target destination
      @param data the information to send
    */
-    void sendMessage(const std::vector<char>& data)
+    void send(const std::vector<char>& data)
     {
-        helicsEndpointSendMessageRaw(
-            ep, HELICS_NULL_POINTER, data.data(), static_cast<int>(data.size()), hThrowOnError());
+        helicsEndpointSend(ep, data.data(), static_cast<int>(data.size()), hThrowOnError());
     }
 
     /** send a vector of data to a particular destination
      @param dest the target endpoint to send the data to
      @param data the information to send
    */
-    void sendMessage(const std::string& dest, const std::vector<char>& data)
+    void sendTo(const std::string& dest, const std::vector<char>& data)
     {
-        helicsEndpointSendMessageRaw(
+        helicsEndpointSendTo(
             ep, dest.c_str(), data.data(), static_cast<int>(data.size()), hThrowOnError());
     }
     /** send a vector of data to the target destination at a particular time
      @param data the information to send
       @param time the time the message should be delivered
    */
-    void sendMessage(const std::vector<char>& data, helics_time time)
+    void sendAt(helics_time time, const std::vector<char>& data)
     {
-        helicsEndpointSendEventRaw(ep,
-                                   HELICS_NULL_POINTER,
-                                   data.data(),
-                                   static_cast<int>(data.size()),
-                                   time,
-                                   hThrowOnError());
+        helicsEndpointSendAt(ep, time, data.data(), static_cast<int>(data.size()), hThrowOnError());
     }
     /** send a vector of data to a particular destination at a particular time
      @param dest the target endpoint to send the data to
      @param data the information to send
       @param time the time the message should be delivered
    */
-    void sendMessage(const std::string& dest, const std::vector<char>& data, helics_time time)
+    void sendToAt(const std::string& dest, helics_time time, const std::vector<char>& data)
     {
-        helicsEndpointSendEventRaw(
-            ep, dest.c_str(), data.data(), static_cast<int>(data.size()), time, hThrowOnError());
+        helicsEndpointSendToAt(
+            ep, dest.c_str(), time, data.data(), static_cast<int>(data.size()), hThrowOnError());
     }
 
     /** send a message object

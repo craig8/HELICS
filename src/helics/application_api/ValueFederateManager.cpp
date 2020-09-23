@@ -7,6 +7,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "ValueFederateManager.hpp"
 
 #include "../common/JsonBuilder.hpp"
+#include "../core/Core.hpp"
 #include "../core/core-exceptions.hpp"
 #include "../core/queryHelpers.hpp"
 #include "Inputs.hpp"
@@ -14,7 +15,7 @@ SPDX-License-Identifier: BSD-3-Clause
 
 #include <utility>
 namespace helics {
-ValueFederateManager::ValueFederateManager(Core* coreOb, ValueFederate* vfed, local_federate_id id):
+ValueFederateManager::ValueFederateManager(Core* coreOb, ValueFederate* vfed, LocalFederateId id):
     coreObject(coreOb), fed(vfed), fedID(id)
 {
 }
@@ -158,7 +159,7 @@ void ValueFederateManager::setDefaultValue(const Input& inp, const data_view& bl
         auto* info = static_cast<input_info*>(inp.dataReference);
 
         /** copy the data first since we are not entirely sure of the lifetime of the data_view*/
-        info->lastData = data_view(std::make_shared<data_block>(block.data(), block.size()));
+        info->lastData = data_view(std::make_shared<SmallBuffer>(block.data(), block.size()));
         info->lastUpdate = CurrentTime;
     } else {
         throw(InvalidIdentifier("Input id is invalid"));
@@ -166,7 +167,7 @@ void ValueFederateManager::setDefaultValue(const Input& inp, const data_view& bl
 }
 
 /** we have a new message from the core*/
-void ValueFederateManager::getUpdateFromCore(interface_handle updatedHandle)
+void ValueFederateManager::getUpdateFromCore(InterfaceHandle updatedHandle)
 {
     auto data = coreObject->getValue(updatedHandle);
     auto inpHandle = inputs.lock();
@@ -290,8 +291,8 @@ std::string ValueFederateManager::localQuery(const std::string& queryStr) const
     if (queryStr == "inputs") {
         ret = generateStringVector_if(
             inputs.lock_shared(),
-            [](const auto& info) { return info.actualName; },
-            [](const auto& info) { return (!info.actualName.empty()); });
+            [](const auto& info) { return info.getName(); },
+            [](const auto& info) { return (!info.getName().empty()); });
     } else if (queryStr == "publications") {
         ret = generateStringVector_if(
             publications.lock_shared(),

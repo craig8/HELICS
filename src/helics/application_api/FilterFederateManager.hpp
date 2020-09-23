@@ -24,7 +24,7 @@ class FilterFederateManager {
   public:
     /** construct from a pointer to a core and a specified federate id
      */
-    FilterFederateManager(Core* coreObj, Federate* fFed, local_federate_id id);
+    FilterFederateManager(Core* coreObj, Federate* fFed, LocalFederateId id);
     /** destructor */
     ~FilterFederateManager();
 
@@ -74,11 +74,13 @@ class FilterFederateManager {
     int getFilterCount() const;
     /** close all filters*/
     void closeAllFilters();
+    /** close all filters*/
+    void disconnectAllFilters();
 
   private:
     Core* coreObject = nullptr;
     shared_guarded<gmlc::containers::MappedVector<std::unique_ptr<Filter>, std::string>> filters;
     Federate* fed = nullptr;  //!< pointer back to the message Federate
-    const local_federate_id fedID;  //!< storage for the federate ID
+    const LocalFederateId fedID;  //!< storage for the federate ID
 };
 }  // namespace helics

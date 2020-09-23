@@ -29,10 +29,10 @@ TEST(ActionMessage_tests, action_test_to_string_conversion)
     */
     m.actionTime = 47.2342;
     m.payload = "this is a string that is sufficiently long";
-    m.source_handle = interface_handle{4};
-    m.source_id = global_federate_id{232324};
-    m.dest_id = global_federate_id{22552215};
-    m.dest_handle = interface_handle{2322342};
+    m.source_handle = InterfaceHandle{4};
+    m.source_id = GlobalFederateId{232324};
+    m.dest_id = GlobalFederateId{22552215};
+    m.dest_handle = InterfaceHandle{2322342};
 
     std::string data;
     m.to_string(data);
@@ -64,10 +64,10 @@ TEST(ActionMessage_tests, action_test_to_string_conversion_info)
     */
     m.actionTime = 47.2342;
     m.payload = "this is a string that is sufficiently long";
-    m.source_handle = interface_handle(4);
-    m.source_id = global_federate_id(232324);
-    m.dest_id = global_federate_id(22552215);
-    m.dest_handle = interface_handle(2322342);
+    m.source_handle = InterfaceHandle(4);
+    m.source_id = GlobalFederateId(232324);
+    m.dest_id = GlobalFederateId(22552215);
+    m.dest_handle = InterfaceHandle(2322342);
 
     m.setString(sourceStringLoc, "this is a long source string to test");
     m.setString(origSourceStringLoc, "this is a longer alternate source string to test");
@@ -105,10 +105,10 @@ TEST(ActionMessage_tests, action_test_to_string_time_request)
     */
     m.payload = "this is a string that is sufficiently long";
     m.actionTime = 47.2342;
-    m.source_handle = interface_handle{4};
-    m.source_id = global_federate_id{232324};
-    m.dest_id = global_federate_id{22552215};
-    m.dest_handle = interface_handle{2322342};
+    m.source_handle = InterfaceHandle{4};
+    m.source_id = GlobalFederateId{232324};
+    m.dest_id = GlobalFederateId{22552215};
+    m.dest_handle = InterfaceHandle{2322342};
     m.setString(sourceStringLoc, "this is a long source string to test");
     // this is a time request and the payload and strings don't get copied
     m.Tdemin = 2342532.2342;
@@ -161,10 +161,10 @@ TEST(ActionMessage_tests, constructor_test)
 TEST(ActionMessage_tests, copy_constructor_test)
 {
     helics::ActionMessage cmd(helics::CMD_INIT);
-    cmd.source_id = global_federate_id{1};
-    cmd.source_handle = interface_handle{2};
-    cmd.dest_id = global_federate_id{3};
-    cmd.dest_handle = interface_handle{4};
+    cmd.source_id = GlobalFederateId{1};
+    cmd.source_handle = InterfaceHandle{2};
+    cmd.dest_id = GlobalFederateId{3};
+    cmd.dest_handle = InterfaceHandle{4};
     cmd.flags = 0x1a2F;  // this has no significance
     cmd.actionTime = helics::Time::maxVal();
     cmd.payload = "hello world";
@@ -182,8 +182,8 @@ TEST(ActionMessage_tests, copy_constructor_test)
     EXPECT_EQ(cmd_copy.dest_handle.baseValue(), 4);
     EXPECT_EQ(cmd_copy.flags, 0x1a2F);
     EXPECT_EQ(cmd_copy.actionTime, helics::Time::maxVal());
-    EXPECT_EQ(cmd_copy.payload, "hello world");
-    EXPECT_EQ(cmd_copy.name, "hello world");  // aliased to payload
+    EXPECT_EQ(cmd_copy.payload.to_string(), "hello world");
+    EXPECT_EQ(cmd_copy.name(), "hello world");  // aliased to payload
 
     EXPECT_EQ(cmd_copy.Te, helics::Time::maxVal());
     EXPECT_EQ(cmd_copy.Tdemin, helics::Time::minVal());
@@ -195,10 +195,10 @@ TEST(ActionMessage_tests, copy_constructor_test)
 TEST(ActionMessage_tests, assignment_test)
 {
     helics::ActionMessage cmd(helics::CMD_INIT);
-    cmd.source_id = global_federate_id(1);
-    cmd.source_handle = interface_handle(2);
-    cmd.dest_id = global_federate_id(3);
-    cmd.dest_handle = interface_handle(4);
+    cmd.source_id = GlobalFederateId(1);
+    cmd.source_handle = InterfaceHandle(2);
+    cmd.dest_id = GlobalFederateId(3);
+    cmd.dest_handle = InterfaceHandle(4);
     setActionFlag(cmd, iteration_requested_flag);
     setActionFlag(cmd, required_flag);
     setActionFlag(cmd, error_flag);
@@ -220,8 +220,8 @@ TEST(ActionMessage_tests, assignment_test)
     EXPECT_TRUE(checkActionFlag(cmd_assign, required_flag));
     EXPECT_TRUE(checkActionFlag(cmd_assign, error_flag));
     EXPECT_EQ(cmd_assign.actionTime, helics::Time::maxVal());
-    EXPECT_EQ(cmd_assign.payload, "hello world");
-    EXPECT_EQ(cmd_assign.name, "hello world");  // aliased to payload
+    EXPECT_EQ(cmd_assign.payload.to_string(), "hello world");
+    EXPECT_EQ(cmd_assign.name(), "hello world");  // aliased to payload
 
     EXPECT_EQ(cmd_assign.Te, helics::Time::maxVal());
     EXPECT_EQ(cmd_assign.Tdemin, helics::Time::minVal());
@@ -264,10 +264,10 @@ TEST(ActionMessage_tests, comparison_test)
 TEST(ActionMessage_tests, conversion_test)
 {
     helics::ActionMessage cmd(helics::CMD_SEND_MESSAGE);
-    cmd.source_id = global_federate_id(1);
-    cmd.source_handle = interface_handle(2);
-    cmd.dest_id = global_federate_id(3);
-    cmd.dest_handle = interface_handle(4);
+    cmd.source_id = GlobalFederateId(1);
+    cmd.source_handle = InterfaceHandle(2);
+    cmd.dest_id = GlobalFederateId(3);
+    cmd.dest_handle = InterfaceHandle(4);
     setActionFlag(cmd, iteration_requested_flag);
     setActionFlag(cmd, required_flag);
     setActionFlag(cmd, error_flag);
@@ -293,10 +293,10 @@ TEST(ActionMessage_tests, conversion_test)
 TEST(ActionMessage_tests, conversion_test2)
 {
     helics::ActionMessage cmd(helics::CMD_SEND_MESSAGE);
-    cmd.source_id = global_federate_id{1};
-    cmd.source_handle = interface_handle{2};
-    cmd.dest_id = global_federate_id{3};
-    cmd.dest_handle = interface_handle{4};
+    cmd.source_id = GlobalFederateId{1};
+    cmd.source_handle = InterfaceHandle{2};
+    cmd.dest_id = GlobalFederateId{3};
+    cmd.dest_handle = InterfaceHandle{4};
     setActionFlag(cmd, iteration_requested_flag);
     setActionFlag(cmd, required_flag);
     setActionFlag(cmd, error_flag);
@@ -322,10 +322,10 @@ TEST(ActionMessage_tests, conversion_test2)
 TEST(ActionMessage_tests, message_message_conversion_test)
 {
     helics::ActionMessage cmd(helics::CMD_SEND_MESSAGE);
-    cmd.source_id = global_federate_id{1};
-    cmd.source_handle = interface_handle{2};
-    cmd.dest_id = global_federate_id{3};
-    cmd.dest_handle = interface_handle{4};
+    cmd.source_id = GlobalFederateId{1};
+    cmd.source_handle = InterfaceHandle{2};
+    cmd.dest_id = GlobalFederateId{3};
+    cmd.dest_handle = InterfaceHandle{4};
     setActionFlag(cmd, iteration_requested_flag);
     setActionFlag(cmd, required_flag);
     setActionFlag(cmd, error_flag);
@@ -367,12 +367,14 @@ TEST(ActionMessage_tests, check_conversions)
     auto testBuffer1 = std::make_unique<char[]>(cmdStr.size() + 20);
     auto testBuffer2 = std::make_unique<char[]>(cmdStr.size() >> 2U);  // make a too small buffer
 
-    auto res = cmd.toByteArray(testBuffer1.get(), static_cast<int>(cmdStr.size() + 20));
+    auto res = cmd.toByteArray(reinterpret_cast<std::byte*>(testBuffer1.get()),
+                               static_cast<int>(cmdStr.size() + 20));
     EXPECT_EQ(res, static_cast<int>(cmdStr.size()));
     // just check to make sure the same string was written
     EXPECT_EQ(cmdStr, std::string(testBuffer1.get(), res));
     // this should return -1
-    res = cmd.toByteArray(testBuffer2.get(), static_cast<int>(cmdStr.size() >> 2U));
+    res = cmd.toByteArray(reinterpret_cast<std::byte*>(testBuffer2.get()),
+                          static_cast<int>(cmdStr.size() >> 2U));
     EXPECT_EQ(res, -1);
 }
 
@@ -380,10 +382,10 @@ TEST(ActionMessage_tests, check_conversions)
 TEST(ActionMessage_tests, check_packetization)
 {
     helics::ActionMessage cmd(helics::CMD_SEND_MESSAGE);
-    cmd.source_id = global_federate_id(1);
-    cmd.source_handle = interface_handle(2);
-    cmd.dest_id = global_federate_id(3);
-    cmd.dest_handle = interface_handle(4);
+    cmd.source_id = GlobalFederateId(1);
+    cmd.source_handle = InterfaceHandle(2);
+    cmd.dest_id = GlobalFederateId(3);
+    cmd.dest_handle = InterfaceHandle(4);
     setActionFlag(cmd, iteration_requested_flag);
     setActionFlag(cmd, required_flag);
     setActionFlag(cmd, error_flag);
@@ -395,7 +397,7 @@ TEST(ActionMessage_tests, check_packetization)
     auto cmdString = cmd.packetize();
     EXPECT_GE(cmdStringNormal.size() + 6, cmdString.size());
     helics::ActionMessage cmd2;
-    auto res = cmd2.depacketize(cmdString.data(), static_cast<int>(cmdString.size()));
+    auto res = cmd2.depacketize(reinterpret_cast<std::byte*>(cmdString.data()), cmdString.size());
     EXPECT_EQ(res, static_cast<int>(cmdString.size()));
     EXPECT_TRUE(cmd.action() == cmd2.action());
     EXPECT_EQ(cmd.actionTime, cmd2.actionTime);

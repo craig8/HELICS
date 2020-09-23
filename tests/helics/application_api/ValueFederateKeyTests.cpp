@@ -8,9 +8,9 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "ValueFederateTestTemplates.hpp"
 #include "helics/application_api/BrokerApp.hpp"
 #include "helics/application_api/CoreApp.hpp"
-#include "helics/application_api/Publications.hpp"
 #include "helics/application_api/Subscriptions.hpp"
 #include "helics/application_api/ValueFederate.hpp"
+#include "helics/core/Core.hpp"
 #include "helics/core/helics_definitions.hpp"
 #include "helics/helics_enums.h"
 
@@ -615,7 +615,7 @@ TEST_P(valuefed_single_type, block_send_receive)
 
     auto& sub1 = vFed1->registerSubscription("fed0/pub3", "");
 
-    helics::data_block db(547, ';');
+    helics::SmallBuffer db(547, ';');
 
     vFed1->enterExecutingMode();
     vFed1->publishRaw(pubid3, db);
@@ -642,8 +642,8 @@ TEST_P(valuefed_single_type, all_callback)
     auto& sub2 = vFed1->registerSubscription("pub2", "");
     auto& sub3 = vFed1->registerSubscription("fed0/pub3", "");
 
-    helics::data_block db(547, ';');
-    helics::interface_handle lastId;
+    helics::SmallBuffer db(547, ';');
+    helics::InterfaceHandle lastId;
     helics::Time lastTime;
     vFed1->setInputNotificationCallback([&](const helics::Input& subid, helics::Time callTime) {
         lastTime = callTime;
@@ -716,8 +716,7 @@ TEST_P(valuefed_single_type, transfer_close)
     // make sure the value is still what we expect
     s = vFed1->getString(subid);
     EXPECT_EQ(s, "string1");
-
-    vFed1->closeInterface(pubid.getHandle());
+    pubid.close();
     // advance time
     gtime = vFed1->requestTime(2.0);
     // make sure the value was updated
@@ -816,7 +815,7 @@ TEST_P(valuefed_all_type_tests, dual_transfer_close)
     subid.getValue(s);
     EXPECT_EQ(s, "string1");
     // advance time
-    vFed1->closeInterface(pubid.getHandle());
+    pubid.close();
     f1time = std::async(std::launch::async, [&]() { return vFed1->requestTime(2.0); });
     gtime = vFed2->requestTime(2.0);
 

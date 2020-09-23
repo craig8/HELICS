@@ -22,16 +22,16 @@ class InputInfo {
     struct dataRecord {
         Time time{Time::minVal()};  //!< the time of the data value
         unsigned int iteration{0};  //!< the iteration number of the data value
-        std::shared_ptr<const data_block> data;  //!< the data value
+        std::shared_ptr<const SmallBuffer> data;  //!< the data value
         /** default constructor*/
         dataRecord() = default;
-        dataRecord(Time recordTime, std::shared_ptr<const data_block> recordData):
+        dataRecord(Time recordTime, std::shared_ptr<const SmallBuffer> recordData):
             time(recordTime), data(std::move(recordData))
         {
         }
         dataRecord(Time recordTime,
                    unsigned int recordIteration,
-                   std::shared_ptr<const data_block> recordData):
+                   std::shared_ptr<const SmallBuffer> recordData):
             time(recordTime),
             iteration(recordIteration), data(std::move(recordData))
         {
@@ -52,7 +52,7 @@ class InputInfo {
         }
     };
     /** constructor with all the information*/
-    InputInfo(global_handle handle,
+    InputInfo(GlobalHandle handle,
               const std::string& key_,
               const std::string& type_,
               const std::string& units_):
@@ -61,7 +61,7 @@ class InputInfo {
     {
     }
 
-    const global_handle id;  //!< identifier for the handle
+    const GlobalHandle id;  //!< identifier for the handle
     const std::string key;  //!< the identifier for the input
     const std::string type;  //! the nominal type of data for the input
     const std::string units;  //!< the units of the controlInput
@@ -79,9 +79,9 @@ class InputInfo {
     int32_t required_connnections{0};  //!< an exact number of connections required
     std::vector<std::pair<helics::Time, unsigned int>>
         current_data_time;  //!< the most recent published data times
-    std::vector<std::shared_ptr<const data_block>>
+    std::vector<std::shared_ptr<const SmallBuffer>>
         current_data;  //!< the most recent published data
-    std::vector<global_handle> input_sources;  //!< the sources of the input signals
+    std::vector<GlobalHandle> input_sources;  //!< the sources of the input signals
     std::vector<Time> deactivated;  //!< indicator that the source has been deactivated
     std::vector<sourceInformation> source_info;  //!< the name,type,units of the sources
     std::vector<int32_t> priority_sources;  //!< the list of priority inputs;
@@ -90,16 +90,16 @@ class InputInfo {
 
   public:
     /** get all the current data*/
-    const std::vector<std::shared_ptr<const data_block>>& getAllData() const;
+    const std::vector<std::shared_ptr<const SmallBuffer>>& getAllData() const;
     /** get a particular data input*/
-    const std::shared_ptr<const data_block>& getData(int index) const;
+    const std::shared_ptr<const SmallBuffer>& getData(int index) const;
     /** get a the most recent data point*/
-    const std::shared_ptr<const data_block>& getData(uint32_t* inputIndex) const;
+    const std::shared_ptr<const SmallBuffer>& getData(uint32_t* inputIndex) const;
     /** add a data block into the queue*/
-    void addData(global_handle source_id,
+    void addData(GlobalHandle source_id,
                  Time valueTime,
                  unsigned int iteration,
-                 std::shared_ptr<const data_block> data);
+                 std::shared_ptr<const SmallBuffer> data);
 
     /** update current data not including data at the specified time
     @param newTime the time to move the subscription to
@@ -120,12 +120,12 @@ class InputInfo {
     /** get the event based on the event queue*/
     Time nextValueTime() const;
     /** add a new source target to the input*/
-    void addSource(global_handle newSource,
+    void addSource(GlobalHandle newSource,
                    const std::string& sourceName,
                    const std::string& stype,
                    const std::string& sunits);
     /** remove a source */
-    void removeSource(global_handle sourceToRemove, Time minTime);
+    void removeSource(GlobalHandle sourceToRemove, Time minTime);
     /** remove a source */
     void removeSource(const std::string& sourceName, Time minTime);
     /** clear all non-current data*/
@@ -133,11 +133,13 @@ class InputInfo {
 
     const std::string& getInjectionType() const;
     const std::string& getInjectionUnits() const;
+    const std::string& getTargets() const;
 
   private:
     bool updateData(dataRecord&& update, int index);
     mutable std::string inputUnits;
     mutable std::string inputType;
+    mutable std::string sourceTargets;
 };
 
 bool checkTypeMatch(const std::string& type1, const std::string& type2, bool strict_match);
