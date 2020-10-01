@@ -22,8 +22,6 @@ helicsFederateInfoSetIntegerProperty(fi,helics_property_int_log_level, helics_lo
 h.helicsFederateInfoSetIntegerProperty(fi,h.helics_property_int_log_level, h.helics_log_level_data)
 ```
 
-NOTE: logging level properties set in a federateInfo will apply to a core as well if it is the first federate registered in the core. After registration log level properties must be set separately for the core and federate.
-
 There are several levels used inside HELICS for logging
 
 - `helics_log_level_no_print` Don't print anything
@@ -78,7 +76,7 @@ toml files are similar. It is also possible to specify at the core level
   "name": "valueFed", // the name of the federate
   "coretype": "zmq", //the type of the core "test","zmq","udp","ipc","tcp","mpi"
   "corename": "core1", //this matters most for ipc and test cores, can be empty
-  "coreinitstring": "--autobroker --log_level=trace", // the initialization string for the core in the form of a command line arguments
+  "coreinit": "--autobroker --log_level=trace", // the initialization string for the core in the form of a command line arguments
   "period": 1.0 //the period with which federate may return time
 }
 ```
@@ -104,7 +102,7 @@ when specifying log levels through the command line or through config files it i
   "name": "valueFed", // the name of the federate
   "coretype": "zmq", //the type of the core "test","zmq","udp","ipc","tcp","mpi"
   "corename": "core1", //this matters most for ipc and test cores, can be empty
-  "coreinitstring": "--autobroker", // the initialization string for the core in the form of a command line arguments
+  "coreinit": "--autobroker", // the initialization string for the core in the form of a command line arguments
   "period": 1.0, //the period with which federate may return time
   "log_level": "connections" //specify the log level as a string
 }
@@ -163,3 +161,6 @@ void logDebugMessage (const std::string &message) const;
 ```
 
 These will log a message at the appropriate level or at a user specified level.
+
+
+## Example from Base Model
