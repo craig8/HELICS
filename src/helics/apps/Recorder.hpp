@@ -87,7 +87,7 @@ namespace apps {
     @param index the number of the point to retrieve
     @return a pair with the tag as the first element and the value as the second
     */
-        std::pair<std::string, std::string> getValue(int index) const;
+        std::pair<std::string_view, std::string> getValue(int index) const;
         /** get a message
     @details makes a copy of a message and returns it in a unique_ptr
     @param index the number of the message to retrieve
@@ -148,12 +148,13 @@ namespace apps {
         std::unique_ptr<CloningFilter> cFilt;  //!< a pointer to a clone filter
         std::vector<ValueCapture> points;  //!< lists of points that were captured
         std::vector<Input> subscriptions;  //!< the actual subscription objects
+        std::vector<std::string> targets;  //!< specified targets for the subscriptions
         std::vector<Endpoint> endpoints;  //!< the actual endpoint objects
         std::unique_ptr<Endpoint> cloneEndpoint;  //!< the endpoint for cloned message delivery
         std::vector<std::unique_ptr<Message>> messages;  //!< list of messages
-        std::map<helics::interface_handle, int> subids;  //!< map of the subscription ids
+        std::map<helics::InterfaceHandle, int> subids;  //!< map of the subscription ids
         std::map<std::string, int> subkeys;  //!< translate subscription names to an index
-        std::map<helics::interface_handle, int> eptids;  // translate subscription id to index
+        std::map<helics::InterfaceHandle, int> eptids;  // translate subscription id to index
         std::map<std::string, int> eptNames;  //!< translate endpoint name to index
         std::vector<ValueStats> vStat;  //!< storage for statistics capture
         std::vector<std::string> captureInterfaces;  //!< storage for the interfaces to capture

@@ -35,7 +35,7 @@ class MessageFederateManager {
   public:
     /** construct from a pointer to a core and a specified federate id
      */
-    MessageFederateManager(Core* coreOb, MessageFederate* mFed, local_federate_id id);
+    MessageFederateManager(Core* coreOb, MessageFederate* mFed, LocalFederateId id);
     ~MessageFederateManager();
     /** register an endpoint
     @details call is only valid in startup mode
@@ -44,18 +44,13 @@ class MessageFederateManager {
     */
     Endpoint& registerEndpoint(const std::string& name, const std::string& type);
 
-    /** @brief give the core a hint for known communication paths
-    Specifying a path that is not present will cause the simulation to abort with an error message
-    @param localEndpoint the local endpoint of a known communication pair
-    @param remoteEndpoint of a communication pair
-    */
-    void registerKnownCommunicationPath(const Endpoint& localEndpoint,
-                                        const std::string& remoteEndpoint);
-    /** subscribe to valueFederate publication to be delivered as Messages to the given endpoint
-    @param ept the specified endpoint to deliver the values
-    @param pubName the name of the publication to subscribe
-    */
-    void subscribe(const Endpoint& ept, const std::string& pubName);
+    /** register a targeted endpoint
+@details call is only valid in startup mode
+@param name the name of the endpoint
+@param type the defined type of the interface for endpoint checking if requested
+*/
+    Endpoint& registerTargetedEndpoint(const std::string& name, const std::string& type);
+
     /** check if the federate has any outstanding messages*/
     bool hasMessage() const;
     /* check if a given endpoint has any unread messages*/
@@ -75,16 +70,6 @@ class MessageFederateManager {
     static std::unique_ptr<Message> getMessage(const Endpoint& ept);
     /* receive a communication message for any endpoint in the federate*/
     std::unique_ptr<Message> getMessage();
-
-    /**/
-    void sendMessage(const Endpoint& source, const std::string& dest, const data_view& message);
-    /**/
-    void sendMessage(const Endpoint& source,
-                     const std::string& dest,
-                     const data_view& message,
-                     Time sendTime);
-    /**/
-    void sendMessage(const Endpoint& source, std::unique_ptr<Message> message);
 
     /** update the time from oldTime to newTime
     @param newTime the newTime of the federate
@@ -125,11 +110,6 @@ class MessageFederateManager {
     /**get the number of registered endpoints*/
     int getEndpointCount() const;
 
-    /** add a named filter to an endpoint for all message coming from the endpoint*/
-    void addSourceFilter(const Endpoint& ept, const std::string& filterName);
-    /** add a named filter to an endpoint for all message going to the endpoint*/
-    void addDestinationFilter(const Endpoint& ept, const std::string& filterName);
-
   private:
     class EndpointData {
       public:
@@ -138,13 +118,13 @@ class MessageFederateManager {
     };
     shared_guarded<
         gmlc::containers::
-            DualMappedVector<Endpoint, std::string, interface_handle, reference_stability::stable>>
+            DualMappedVector<Endpoint, std::string, InterfaceHandle, reference_stability::stable>>
         local_endpoints;  //!< storage for the local endpoint information
     atomic_guarded<std::function<void(Endpoint&, Time)>> allCallback;
     Time CurrentTime = Time::minVal();  //!< the current simulation time
     Core* coreObject;  //!< the pointer to the actual core
     MessageFederate* mFed;  //!< pointer back to the message Federate
-    const local_federate_id fedID;  //!< storage for the federate ID
+    const LocalFederateId fedID;  //!< storage for the federate ID
     shared_guarded<std::vector<std::unique_ptr<EndpointData>>>
         eptData;  //!< the storage for the message queues and other unique Endpoint information
     guarded<std::vector<unsigned int>>

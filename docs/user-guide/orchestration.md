@@ -9,7 +9,7 @@ co-simulation orchestration. One advantage that Merlin has, is its
 ability to interface with HPC systems that have SLURM or Flux as their
 resource managers.
 
-# Definition of "Orchestration" in HELICS
+## Definition of "Orchestration" in HELICS
 
 We will define the term "orchestration" within HELICS as workflow and
 deployment. This will allow users to define a co-simulation workflow

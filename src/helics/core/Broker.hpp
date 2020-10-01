@@ -62,7 +62,7 @@ class Broker {
     the source name and a string with the message
     */
     virtual void setLoggingCallback(
-        const std::function<void(int, const std::string&, const std::string&)>& logFunction) = 0;
+        const std::function<void(int, std::string_view, std::string_view)>& logFunction) = 0;
 
     /** set the broker logging file*/
     virtual void setLogFile(const std::string& lfile) = 0;
@@ -91,6 +91,14 @@ class Broker {
     @param value the value of the global
     */
     virtual void setGlobal(const std::string& valueName, const std::string& value) = 0;
+
+    /** send a command to a specific target
+   @details the format is somewhat unspecified; target is the name of an object, typically one of
+   "federation","root",  "broker", "core", or the name of a specific object/core/broker
+   @param target the specific target of the command
+   @param commandStr the actual command
+   */
+    virtual void sendCommand(const std::string& target, const std::string& commandStr) = 0;
 
     /** load a file containing connection information
     @param file a JSON or TOML file containing connection information*/

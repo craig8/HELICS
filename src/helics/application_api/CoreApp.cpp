@@ -220,6 +220,13 @@ void CoreApp::setGlobal(const std::string& valueName, const std::string& value)
     }
 }
 
+void CoreApp::sendCommand(const std::string& target, const std::string& commandStr)
+{
+    if (core) {
+        core->sendCommand(target, commandStr, std::string{});
+    }
+}
+
 void CoreApp::setLoggingLevel(int loglevel)
 {
     if (core) {
@@ -244,7 +251,7 @@ void CoreApp::setReadyToInit()
 void CoreApp::haltInit()
 {
     if (core) {
-        core->setFlagOption(local_core_id, helics_flag_delay_init_entry, true);
+        core->setFlagOption(gLocalCoreId, helics_flag_delay_init_entry, true);
     }
 }
 

@@ -41,12 +41,11 @@ class EchoMessageLeaf: public BenchmarkFederate {
             fed->requestNextStep();
             ++cnt;
             if (cnt <= iter) {
-                ept.send("echo", txstring);
+                ept.sendTo("echo", txstring);
             }
             while (ept.hasMessage()) {
                 auto m = ept.getMessage();
-                auto& nstring = m->data.to_string();
-                if (nstring != txstring) {
+                if (m->data.to_string() != txstring) {
                     throw("incorrect string");
                 }
             }

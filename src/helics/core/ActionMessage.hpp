@@ -7,6 +7,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #pragma once
 
 #include "ActionMessageDefintions.hpp"
+#include "SmallBuffer.hpp"
 #include "basic_core_types.hpp"
 
 #include <memory>
@@ -33,25 +34,23 @@ class ActionMessage {
     action_message_def::action_t messageAction{CMD_IGNORE};  // 4 -- command
   public:
     int32_t messageID{0};  //!< 8 -- message ID for a variety of purposes
-    global_federate_id source_id{parent_broker_id};  //!< 12 -- for federate_id or route_id
-    interface_handle source_handle{};  //!< 16 -- for local handle or local code
-    global_federate_id dest_id{parent_broker_id};  //!< 20 fed_id for a targeted message
-    interface_handle dest_handle{};  //!< 24 local handle for a targeted message
+    GlobalFederateId source_id{parent_broker_id};  //!< 12 -- for federate_id or route_id
+    InterfaceHandle source_handle{};  //!< 16 -- for local handle or local code
+    GlobalFederateId dest_id{parent_broker_id};  //!< 20 fed_id for a targeted message
+    InterfaceHandle dest_handle{};  //!< 24 local handle for a targeted message
     uint16_t counter{0};  //!< 26 counter for filter tracking or message counter
     uint16_t flags{0};  //!<  28 set of messageFlags
-    uint32_t sequenceID{0};  //!< a sequence number for ordering
+    uint32_t sequenceID{0};  //!< 32 a sequence number for ordering
     Time actionTime{timeZero};  //!< 40 the time an action took place or will take place    //32
-    std::string payload;  //!< string containing the data    //96 std::string is 32 bytes on most
-                          //!< platforms (except libc++)
-    std::string& name;  //!< alias payload to a name reference for registration functions
     Time Te{timeZero};  //!< 48 event time
     Time Tdemin{timeZero};  //!< 56 min dependent event time
     Time Tso{timeZero};  //!< 64 the second order dependent time
+    SmallBuffer payload;  //!< buffer to contain the data payload
   private:
     std::vector<std::string> stringData;  //!< container for extra string data
   public:
     /** default constructor*/
-    ActionMessage() noexcept: name(payload) {}
+    ActionMessage() noexcept {}
     /** construct from an action type
     @details this is intended to be an implicit constructor
     @param startingAction from an action message definition
@@ -60,8 +59,8 @@ class ActionMessage {
     /** construct from action, source and destination id's
      */
     ActionMessage(action_message_def::action_t startingAction,
-                  global_federate_id sourceId,
-                  global_federate_id destId);
+                  GlobalFederateId sourceId,
+                  GlobalFederateId destId);
     /** move constructor*/
     ActionMessage(ActionMessage&& act) noexcept;
     /** build an action message from a message*/
@@ -71,7 +70,7 @@ class ActionMessage {
     /** construct from a data vector*/
     explicit ActionMessage(const std::vector<char>& bytes);
     /** construct from a data pointer and size*/
-    explicit ActionMessage(const char* data, size_t size);
+    ActionMessage(const void* data, size_t size);
     /** destructor*/
     ~ActionMessage();
     /** copy constructor*/
@@ -91,48 +90,49 @@ class ActionMessage {
     void setAction(action_message_def::action_t newAction);
 
     /** set the source from a global handle*/
-    void setSource(global_handle hand)
+    void setSource(GlobalHandle hand)
     {
         source_id = hand.fed_id;
         source_handle = hand.handle;
     }
     /** set the destination from a global handle*/
-    void setDestination(global_handle hand)
+    void setDestination(GlobalHandle hand)
     {
         dest_id = hand.fed_id;
         dest_handle = hand.handle;
     }
     /** get the reference to the string data vector*/
     const std::vector<std::string>& getStringData() const { return stringData; }
-
+    /** set the string name associated with a actionMessage*/
+    void name(std::string_view name) { payload = name; }
+    /** get the string name associated with an action Message*/
+    std::string_view name() const { return payload.to_string(); }
     void clearStringData() { stringData.clear(); }
     // most use cases for this involve short strings, or already have references that need to be
     // copied so supporting move isn't  going to be that useful here, the long strings are going in
     // the payload
-    void setStringData(const std::string& string1)
+    void setStringData(std::string_view string1)
     {
         stringData.resize(1);
         stringData[0] = string1;
     }
-    void setStringData(const std::string& string1, const std::string& string2)
+    void setStringData(std::string_view string1, std::string_view string2)
     {
         stringData.resize(2);
         stringData[0] = string1;
         stringData[1] = string2;
     }
-    void setStringData(const std::string& string1,
-                       const std::string& string2,
-                       const std::string& string3)
+    void setStringData(std::string_view string1, std::string_view string2, std::string_view string3)
     {
         stringData.resize(3);
         stringData[0] = string1;
         stringData[1] = string2;
         stringData[2] = string3;
     }
-    void setStringData(const std::string& string1,
-                       const std::string& string2,
-                       const std::string& string3,
-                       const std::string& string4)
+    void setStringData(std::string_view string1,
+                       std::string_view string2,
+                       std::string_view string3,
+                       std::string_view string4)
     {
         stringData.resize(4);
         stringData[0] = string1;
@@ -142,11 +142,11 @@ class ActionMessage {
     }
     const std::string& getString(int index) const;
 
-    void setString(int index, const std::string& str);
-    /** get the source global_handle*/
-    global_handle getSource() const { return global_handle{source_id, source_handle}; }
+    void setString(int index, std::string_view str);
+    /** get the source GlobalHandle*/
+    GlobalHandle getSource() const { return GlobalHandle{source_id, source_handle}; }
     /** get the global destination handle*/
-    global_handle getDest() const { return global_handle{dest_id, dest_handle}; }
+    GlobalHandle getDest() const { return GlobalHandle{dest_id, dest_handle}; }
     /** swap the source and destination*/
     void swapSourceDest() noexcept
     {
@@ -154,11 +154,11 @@ class ActionMessage {
         std::swap(source_handle, dest_handle);
     }
     /** set some extra piece of data if the full destination is not used*/
-    void setExtraData(int32_t data) { dest_handle = interface_handle{data}; }
+    void setExtraData(int32_t data) { dest_handle = InterfaceHandle{data}; }
     /** get the extra piece of integer data*/
     int32_t getExtraData() const { return dest_handle.baseValue(); }
     /** set some extra piece of data if the full source is not used*/
-    void setExtraDestData(int32_t data) { source_handle = interface_handle{data}; }
+    void setExtraDestData(int32_t data) { source_handle = InterfaceHandle{data}; }
     /** get the extra piece of integer data used in the destination*/
     int32_t getExtraDestData() const { return source_handle.baseValue(); }
     // functions that convert to and from a byte stream
@@ -170,7 +170,7 @@ class ActionMessage {
     @param buffer_size  the size of the buffer
     @return the size of the buffer actually used
     */
-    int toByteArray(char* data, int buffer_size) const;
+    int toByteArray(std::byte* data, std::size_t buffer_size) const;
     /** convert to a string using a reference*/
     void to_string(std::string& data) const;
     /** convert to a byte string*/
@@ -184,13 +184,13 @@ class ActionMessage {
     /** convert a command to a byte vector*/
     std::vector<char> to_vector() const;
     /** generate a command from a raw data stream*/
-    int fromByteArray(const char* data, int buffer_size);
+    std::size_t fromByteArray(const std::byte* data, std::size_t buffer_size);
     /** load a command from a packetized stream /ref packetize
     @return the number of bytes used
     */
-    int depacketize(const char* data, int buffer_size);
+    int depacketize(const void* data, std::size_t buffer_size);
     /** read a command from a string*/
-    void from_string(const std::string& data);
+    void from_string(std::string_view data);
     /** read a command from a char vector*/
     void from_vector(const std::vector<char>& data);
 
