@@ -251,5 +251,10 @@ output that each co-sim runs.
 
 ![](../img/UQ_DAG.png)
 
+### HPC integration
 
+One benefit of Merlin is its built in capability to interface with HPC
+systems that use SLURM or FLUX as their resource managers.
 
+In order to take advantage of this feature, take a look at the
+Interfacing with HPC systems, [Here](https://merlin.readthedocs.io/en/latest/modules/advanced_topics/advanced_topics.html#id2).
